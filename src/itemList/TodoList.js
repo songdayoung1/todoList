@@ -2,7 +2,6 @@ import styled from "styled-components";
 import React, { useState } from "react";
 import TodoListItem from "./TodoListItem";
 import CheckCalendar from "./CheckCalendar";
-import { useEffect } from "react";
 
 const ListContainer = styled.div`
   border: 1px solid black;
@@ -11,32 +10,30 @@ const ListContainer = styled.div`
   margin: 1% 0 0 12%;
 `;
 const Container = styled.div`
-  /* border: 1px solid black; */
   width: 35%;
-
   display: flex;
   justify-content: center;
   align-items: center;
   position: absolute;
-  bottom: 30%;
+  bottom: 25%;
   left: 55%;
 `;
 
-const CheckBox = styled.div``;
+const CheckBox = styled.div`
+  margin: 1% 0 0 12%;
+`;
 const Start = styled.input``;
 const End = styled.input``;
 const Complete = styled.input``;
 const Tag = styled.input``;
 
 function TodoList({
-  closeHandler,
-  openModalHandler,
   todo,
   setTodo,
   isOpen,
   addTodo,
   onToggle,
-  check,
+  reversedOrderedDate,
 }) {
   let arr = [];
   for (let i = 1; i < 50; i++) {
@@ -54,60 +51,102 @@ function TodoList({
     tag: false,
   });
 
-  // const onCheck = () => {
-  //   if (todoCheck.start) {
-  //   }
-  // };
+  const onCheckBox = (e) => {
+    if (e.target.value === "start") {
+      setTodoCheck({
+        ...todoCheck,
+        start: !todoCheck.start,
+      });
+    }
+    if (e.target.value === "end") {
+      setTodoCheck({
+        ...todoCheck,
+        end: !todoCheck.end,
+      });
+    }
+    if (e.target.value === "complete") {
+      setTodoCheck({
+        ...todoCheck,
+        complete: !todoCheck.complete,
+      });
+    }
+    if (e.target.value === "tag") {
+      setTodoCheck({
+        ...todoCheck,
+        tag: !todoCheck.tag,
+      });
+    }
+  };
 
-  // const onCheckBox = (id) => {
-  //   setTodo(
-  //     arr.map((user) =>
-  //       user.id === id ? { ...user, active: !user.active } : user
-  //     )
-  //   );
-  // };
-
-  //생성일 순 누르면 input태그의 상태가 true, {input 태그의 상태가 트루일때 ? 생성일로 오름차순 정렬 맵 : 일반 정렬}
+  // const orderedDate = arr.sort(
+  //   (a, b) => new Date(a.currentDate) - new Date(b.currentDate)
+  // );
 
   return (
     <>
       <div>
         <CheckBox>
           <span>생성일 순</span>
-          <Start type="checkbox"></Start>
+          <Start
+            type="checkbox"
+            defaultChecked={todoCheck.start}
+            value="start"
+            onClick={onCheckBox}
+          ></Start>
           <span>완료일 순</span>
-          <End type="checkbox"></End>
+          <End
+            type="checkbox"
+            defaultChecked={todoCheck.end}
+            value="end"
+            onClick={onCheckBox}
+          ></End>
           <span>완료된 항목</span>
-          <Complete type="checkbox"></Complete>
+          <Complete
+            type="checkbox"
+            defaultChecked={todoCheck.complete}
+            value="complete"
+            onClick={onCheckBox}
+          ></Complete>
           <span>태그</span>
-          <Tag type="checkbox"></Tag>
+          <Tag
+            type="checkbox"
+            defaultChecked={todoCheck.tag}
+            value="tag"
+            onClick={onCheckBox}
+          ></Tag>
         </CheckBox>
-
-        {arr.map((todoList, idx) => {
-          return (
-            <ListContainer key={idx}>
-              <TodoListItem
-                todo={todo}
-                setTodo={setTodo}
-                todoList={todoList}
-                title={todoList.title}
-                tag={todoList.tag}
-                currentDate={todoList.date}
-                dueDate={todoList.dueDate}
-                openModalHandler={openModalHandler}
-                closeHandler={closeHandler}
-                isOpen={isOpen}
-                addTodo={addTodo}
-                onToggle={onToggle}
-                check={check}
-                arr={arr}
-              />
-            </ListContainer>
-          );
-        })}
+        {todoCheck.end
+          ? reversedOrderedDate.map((todoList) => (
+              <ListContainer key={todoList.id}>
+                <TodoListItem
+                  todo={todo}
+                  setTodo={setTodo}
+                  todoList={todoList}
+                  isOpen={isOpen}
+                  addTodo={addTodo}
+                  onToggle={onToggle}
+                  arr={arr}
+                />
+              </ListContainer>
+            ))
+          : arr.map((todoList, idx) => {
+              return (
+                <ListContainer key={idx}>
+                  <TodoListItem
+                    todo={todo}
+                    setTodo={setTodo}
+                    todoList={todoList}
+                    isOpen={isOpen}
+                    addTodo={addTodo}
+                    onToggle={onToggle}
+                    arr={arr}
+                  />
+                </ListContainer>
+              );
+            })}
       </div>
       <Container>
-        <CheckCalendar todo={todo} />
+        <CheckCalendar arr={arr} />
       </Container>
     </>
   );

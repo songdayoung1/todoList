@@ -1,40 +1,38 @@
 import { useState } from "react";
 import TodoList from "./itemList/TodoList";
 import Header from "./itemList/Header";
-import moment from "moment";
-import { useEffect } from "react";
 
 function App() {
   const [todo, setTodo] = useState([
     {
       id: 1,
-      title: "제목",
-      text: "확인",
-      date: "2022-05-19",
-      dueDate: "2022-05-23",
+      title: "오늘의 할 일",
+      text: "오늘의 내용",
+      currentDate: "2022-05-21",
+      dueDate: "2022-05-25",
       tag: ["조금 중요"],
       active: false,
-      hurryUp: false,
+      checked: false,
     },
     {
       id: 2,
-      title: "제목입니다.",
-      text: "확인입니다",
-      date: "2022-05-11",
+      title: "어제의 할 일",
+      text: "어제의 내용",
+      currentDate: "2022-05-20",
       dueDate: "2022-05-30",
-      tag: ["빨간색"],
+      tag: ["아주 중요"],
       active: false,
-      hurryUp: false,
+      checked: false,
     },
     {
       id: 3,
-      title: "제목하나 더",
-      text: "확인도 한번 더 ",
-      date: "2022-05-13",
+      title: "내일의 할 일",
+      text: "내일의 내용",
+      currentDate: "2022-05-21",
       dueDate: "2022-05-27",
-      tag: ["내일까지"],
+      tag: ["긴급"],
       active: false,
-      hurryUp: false,
+      checked: false,
     },
   ]);
 
@@ -65,6 +63,10 @@ function App() {
     }
   }
 
+  const reversedOrderedDate = arr.sort(
+    (a, b) => new Date(a.dueDate) - new Date(b.dueDate)
+  );
+
   const onToggle = (id) => {
     setTodo(
       arr.map((user) =>
@@ -73,18 +75,13 @@ function App() {
     );
   };
 
-  const nowTime = moment().format("YYYY-MM-DD").slice(-2);
-  const orderedDate = todo.sort((a, b) => new Date(a.date) - new Date(b.date));
-  const reversedOrderedDate = todo.sort(
-    (a, b) => new Date(b.date) - new Date(a.date)
-  );
-
   return (
     <>
       <Header
         addTodo={addTodo}
         todo={todo}
         isOpen={isOpen}
+        setIsOpen={setIsOpen}
         openModalHandler={openModalHandler}
         closeHandler={closeHandler}
       ></Header>
@@ -97,6 +94,7 @@ function App() {
         closeHandler={closeHandler}
         addTodo={addTodo}
         onToggle={onToggle}
+        reversedOrderedDate={reversedOrderedDate}
       ></TodoList>
       {/* // <ModalOn /> */}
     </>

@@ -17,28 +17,55 @@ const ModalContainer = styled.div`
   width: 70%;
   height: 70%;
   background: white;
+
+  .add-tag {
+    border: 1px solid black;
+    display: flex;
+    align-items: center;
+    border: none;
+    outline: none;
+    color: #666666;
+    font-size: 1.2rem;
+    margin-bottom: 2%;
+  }
 `;
-const CloseButton = styled.button``;
+const CloseButton = styled.button`
+  border: none;
+  outline: none;
+  position: relative;
+  left: 92%;
+  top: 3%;
+  width: 5%;
+  height: 5%;
+  cursor: pointer;
+  background: #cccccc;
+  border-radius: 4px;
+`;
 const ModalForm = styled.div`
   margin-top: 5%;
   height: 80%;
-  border: 1px solid black;
+  /* border: 1px solid black; */
   padding-left: 15%;
 `;
 const Title = styled.input`
   width: 70%;
-  height: 10%;
-  font-size: 1.7rem;
+  height: 15%;
+  font-size: 2.5rem;
+  border: none;
+  outline: none;
+  font-weight: 700;
 `;
 
 const TextBox = styled.div`
   width: 80%;
   height: 30%;
   margin: 0;
+  font-size: 1.2rem;
   display: flex;
+  color: #666666;
 
   .content {
-    border: 1px solid black;
+    /* border: 1px solid black; */
   }
 `;
 const Text = styled.textarea`
@@ -47,9 +74,13 @@ const Text = styled.textarea`
   margin-left: 2%;
   border: none;
   outline: none;
+  font-size: 1.2rem;
 `;
 const Date = styled.div`
   display: flex;
+  color: #666666;
+  font-size: 1.2rem;
+  margin-bottom: 2%;
   .duedate {
     border: 1px solid black;
     padding-right: 2%;
@@ -67,15 +98,6 @@ const TagBox = styled.div`
   padding: 0 8px;
   border: 1px solid gray;
   border-radius: 3px;
-
-  .add-tag {
-    /* border: 1px solid black; */
-    height: 100%;
-    display: flex;
-    align-items: center;
-    border: none;
-    outline: none;
-  }
 
   .tag {
     width: auto;
@@ -128,14 +150,25 @@ const Warning = styled.div`
 `;
 const AddDate = styled.div``;
 const EditDate = styled.div``;
-const Check = styled.button``;
+const Check = styled.button`
+  border: none;
+  outline: none;
+  position: relative;
+  left: 45%;
+  bottom: 7%;
+  width: 10%;
+  height: 5%;
+  cursor: pointer;
+  background: #cccccc;
+  border-radius: 4px;
+`;
 
-function ModalContents({ closeHandler, addTodo, todo }) {
+function ModalContents({ closeHandler, addTodo, todo, setIsOpen }) {
   const [input, setInput] = useState({
     title: "",
     text: "",
     tag: "",
-    date: "",
+    currentDate: "",
     dueDate: "",
   });
   const nowTime = moment().format("YYYY-MM-DD");
@@ -149,7 +182,6 @@ function ModalContents({ closeHandler, addTodo, todo }) {
 
   const addTags = (e) => {
     const filter = tags.filter((el) => el === e.target.value);
-    // console.log(filter, "filter");
     if (e.target.value !== "" && filter.length === 0) {
       if (tags.length < 4) {
         setTags([...tags, e.target.value]);
@@ -159,8 +191,7 @@ function ModalContents({ closeHandler, addTodo, todo }) {
   };
 
   const checkText = (title) => {
-    // const validation = /^[~!@#$%^&*()_+|<>?:{}]/;
-    const validation = /^[ㄱ-ㅎ|가-힣|a-z|A-Z|0-9|]+$/;
+    const validation = /^[ㄱ-ㅎ|가-힣|a-z|A-Z|0-9|\s]+$/;
     return validation.test(title);
   };
 
@@ -178,26 +209,34 @@ function ModalContents({ closeHandler, addTodo, todo }) {
       title: input.title,
       tag: tags,
       text: input.text,
-      date: nowTime,
-      dueDate: input.date,
+      currentDate: nowTime,
+      dueDate: input.dueDate,
     };
-    if (!newTodo.title || !newTodo.text || !newTodo.date) {
+    if (!newTodo.title || !newTodo.text || !newTodo.dueDate) {
       alert("빈 내용을 채워주세요!");
     } else {
       addTodo(newTodo);
-      // localStorage.setItem(`${newTodo.id}`, JSON.stringify(newTodo));
       closeHandler();
     }
+  };
+
+  todo.map((item) => {
+    localStorage.setItem(`${item.id}`, JSON.stringify(item));
+  });
+
+  const onCloseModal = () => {
+    window.confirm("입력 중 창을 닫으면 내용이 사라집니다.");
+    setIsOpen(false);
   };
 
   return (
     <>
       <ModalBackground>
         <ModalContainer>
-          <CloseButton onClick={closeHandler}>닫기</CloseButton>
+          <CloseButton onClick={onCloseModal}>닫기</CloseButton>
           <ModalForm>
             <Title
-              placeholder="제목 없음"
+              placeholder="제목을 입력해주세요."
               onChange={handleInput}
               name="title"
               value={title}
@@ -218,12 +257,12 @@ function ModalContents({ closeHandler, addTodo, todo }) {
               ></Text>
             </TextBox>
             <Date>
-              <span className="duedate">마감일:</span>
+              <span className="dueDate">마감일:</span>
               <DueDate
                 id="offerdate"
                 type="date"
                 // defaultValue={nowTime}
-                name="date"
+                name="dueDate"
                 onChange={handleInput}
               ></DueDate>
             </Date>

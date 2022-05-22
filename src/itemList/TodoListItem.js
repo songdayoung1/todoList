@@ -75,24 +75,10 @@ const TagBox = styled.div`
   }
 `;
 //태그 달아줘야됨
-const TodoListItem = ({
-  todo,
-  todoList,
-  title,
-  currentDate,
-  dueDate,
-  setTodo,
-  tag,
-  closeHandler,
-  openModalHandler,
-  isOpen,
-  addTodo,
-  onToggle,
-  arr,
-}) => {
+const TodoListItem = ({ todo, todoList, setTodo, addTodo, onToggle, arr }) => {
   const [current, setCurrent] = useState([]);
 
-  const { id, active } = todoList;
+  const { id, active, currentDate, dueDate, tag, text, title } = todoList;
 
   const onChangeRemove = () => {
     const { id } = todoList;
@@ -102,14 +88,6 @@ const TodoListItem = ({
       setTodo(filtered);
     }
     return;
-  };
-
-  const onEditClick = () => {
-    const { id } = todoList;
-
-    let check = todo.filter((item) => item.id === id);
-    setCurrent(check);
-    openModalHandler(true);
   };
 
   const day = Number(moment().format("DD"));
@@ -145,6 +123,24 @@ const TodoListItem = ({
     } else return false;
   });
 
+  const [isOnOpen, setIsOnOpen] = useState(false);
+
+  const onOpenClick = () => {
+    setIsOnOpen(true);
+  };
+
+  const onCloseClick = () => {
+    setIsOnOpen(false);
+  };
+
+  const onEditClick = () => {
+    const { id } = todoList;
+
+    let check = todo.filter((item) => item.id === id);
+    setCurrent(check);
+    onOpenClick();
+  };
+
   return (
     <>
       <Content
@@ -165,6 +161,7 @@ const TodoListItem = ({
             onClick={() => onToggle(id)}
             defaultChecked={active}
           ></input>
+
           {active ? (
             <button
               className="edit"
@@ -205,14 +202,20 @@ const TodoListItem = ({
           </div>
         </div>
       </Content>
-      {isOpen && (
+      {isOnOpen && (
         <ModalOn
           current={current}
-          closeHandler={closeHandler}
+          onCloseClick={onCloseClick}
           todo={todo}
           todoList={todoList}
           setTodo={setTodo}
           addTodo={addTodo}
+          title={title}
+          text={text}
+          tag={tag}
+          id={id}
+          currentDate={currentDate}
+          dueDate={dueDate}
         />
       )}
     </>

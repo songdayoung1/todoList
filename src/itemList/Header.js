@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import React, { useState } from "react";
+import React from "react";
 import ModalContents from "./ModalContents";
 
 const Title = styled.div`
@@ -18,7 +18,7 @@ const View = styled.span`
   font-weight: bold;
 `;
 const AddButton = styled.button`
-  left: 75%;
+  left: 77%;
   position: relative;
 `;
 
@@ -28,7 +28,7 @@ function Header({
   isOpen,
   openModalHandler,
   closeHandler,
-  onCompelte,
+  setIsOpen,
 }) {
   //완료한 항목 : active === true면 완료 / false면 진행 중 === display: none
 
@@ -44,6 +44,7 @@ function Header({
 
       {isOpen && (
         <ModalContents
+          setIsOpen={setIsOpen}
           closeHandler={closeHandler}
           addTodo={addTodo}
           todo={todo}

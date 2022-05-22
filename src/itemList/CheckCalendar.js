@@ -13,8 +13,8 @@ const DueDay = styled.div`
   margin-left: 1px;
 `;
 
-const CheckCalendar = ({ todo }) => {
-  const data = todo.map((item) => item.dueDate);
+const CheckCalendar = ({ arr }) => {
+  const data = arr.map((item) => item.dueDate);
   const [value, onChange] = useState(new Date());
 
   return (
