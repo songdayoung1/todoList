@@ -30,8 +30,6 @@ function Header({
   closeHandler,
   setIsOpen,
 }) {
-  //완료한 항목 : active === true면 완료 / false면 진행 중 === display: none
-
   return (
     <>
       <Title>Daily todolist</Title>

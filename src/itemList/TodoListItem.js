@@ -75,53 +75,58 @@ const TagBox = styled.div`
   }
 `;
 //태그 달아줘야됨
-const TodoListItem = ({ todo, todoList, setTodo, addTodo, onToggle, arr }) => {
-  const [current, setCurrent] = useState([]);
-
+const TodoListItem = ({
+  look,
+  todo,
+  todoList,
+  setTodo,
+  addTodo,
+  onToggle,
+  arr,
+}) => {
   const { id, active, currentDate, dueDate, tag, text, title } = todoList;
 
   const onChangeRemove = () => {
     const { id } = todoList;
     const filtered = todo.filter((item) => item.id !== id);
+
     if (window.confirm("정말 삭제하시겠습니까?")) {
-      localStorage.removeItem(id);
       setTodo(filtered);
+      localStorage.setItem("list", JSON.stringify(filtered));
     }
     return;
   };
 
-  const day = Number(moment().format("DD"));
-  const month = Number(moment().format("MM"));
-  const year = Number(moment().format("YYYY"));
-  const dueDay = arr.map((day) => Object.assign({}, day.dueDate.split("-")));
-  const startDay = new Date(year, month, day);
-  const endDay = dueDay.map((day) => {
-    let endYear = Number(day[0]);
-    let endMonth = Number(day[1]);
-    let end = Number(day[2]);
-    return new Date(endYear, endMonth, end);
-  });
-  const btMs = endDay.map((el) => el.getTime() - startDay.getTime());
-  const btDay = btMs.map((el) => el / (1000 * 60 * 60 * 24));
+  // const day = Number(moment().format("DD"));
+  // const month = Number(moment().format("MM"));
+  // const year = Number(moment().format("YYYY"));
+  // const dueDay = todo.map((day) => Object.assign({}, day.dueDate.split("-")));
+  // const startDay = new Date(year, month, day);
+  // const endDay = dueDay.map((day) => {
+  //   let endYear = Number(day[0]);
+  //   let endMonth = Number(day[1]);
+  //   let end = Number(day[2]);
+  //   return new Date(endYear, endMonth, end);
+  // });
+  // const btMs = endDay.map((el) => el.getTime() - startDay.getTime());
+  // const btDay = btMs.map((el) => el / (1000 * 60 * 60 * 24));
 
-  // let index;
-  let localIdx = [];
-  //넘버
-  const check = btDay.filter((day, idx) => {
-    if (day <= 3) {
-      // index = idx + 1;
-      localIdx.push(idx + 1);
-    }
-  });
+  // let localIdx = [];
 
-  localStorage.setItem("num", localIdx);
-  const getIdx = localStorage.getItem("num").split(",");
-  let numIdxArr = getIdx.filter((el) => {
-    let local = Number(el);
-    if (local === id) {
-      return true;
-    } else return false;
-  });
+  // const check = btDay.filter((day, idx) => {
+  //   if (day <= 3) {
+  //     localIdx.push(idx + 1);
+  //   }
+  // });
+
+  // localStorage.setItem("num", localIdx);
+  // const getIdx = localStorage.getItem("num").split(",");
+  // let numIdxArr = getIdx.filter((el) => {
+  //   let local = Number(el);
+  //   if (local === id) {
+  //     return true;
+  //   } else return false;
+  // });
 
   const [isOnOpen, setIsOnOpen] = useState(false);
 
@@ -131,14 +136,6 @@ const TodoListItem = ({ todo, todoList, setTodo, addTodo, onToggle, arr }) => {
 
   const onCloseClick = () => {
     setIsOnOpen(false);
-  };
-
-  const onEditClick = () => {
-    const { id } = todoList;
-
-    let check = todo.filter((item) => item.id === id);
-    setCurrent(check);
-    onOpenClick();
   };
 
   return (
@@ -165,13 +162,13 @@ const TodoListItem = ({ todo, todoList, setTodo, addTodo, onToggle, arr }) => {
           {active ? (
             <button
               className="edit"
-              onClick={onEditClick}
+              onClick={onOpenClick}
               style={{ visibility: "hidden" }}
             >
               수정
             </button>
           ) : (
-            <button className="edit" onClick={onEditClick}>
+            <button className="edit" onClick={onOpenClick}>
               수정
             </button>
           )}
@@ -195,7 +192,7 @@ const TodoListItem = ({ todo, todoList, setTodo, addTodo, onToggle, arr }) => {
             className="due-date"
             style={{
               textDecoration: active ? "line-through" : "none",
-              color: Number(numIdxArr) === id ? "red" : "none",
+              // color: Number(numIdxArr) === id ? "red" : "none",
             }}
           >
             예정 완료시기 : {dueDate}
@@ -204,18 +201,11 @@ const TodoListItem = ({ todo, todoList, setTodo, addTodo, onToggle, arr }) => {
       </Content>
       {isOnOpen && (
         <ModalOn
-          current={current}
           onCloseClick={onCloseClick}
           todo={todo}
           todoList={todoList}
           setTodo={setTodo}
           addTodo={addTodo}
-          title={title}
-          text={text}
-          tag={tag}
-          id={id}
-          currentDate={currentDate}
-          dueDate={dueDate}
         />
       )}
     </>

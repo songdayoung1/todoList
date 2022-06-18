@@ -157,16 +157,11 @@ const Check = styled.button`
   border-radius: 4px;
 `;
 
-function ModalOn({ todo, todoList, onCloseClick, id, setTodo }) {
-  const { title, text, tag, currentDate, dueDate } = todoList;
-  const [tags, setTags] = useState(tag);
-  const [newText, setNewText] = useState({
-    title: title,
-    text: text,
-    tag: tag,
-    currentDate: currentDate,
-    dueDate: dueDate,
-  });
+function ModalOn({ current, todo, todoList, onCloseClick, setTodo }) {
+  const { title, text, tag, dueDate, id } = todoList;
+  const [tags, setTags] = useState([...tag]); // ['아주 중요']
+  const [newText, setNewText] = useState({ ...todoList });
+
   const handleInput = (e) => {
     const { name, value } = e.target;
 
@@ -175,38 +170,46 @@ function ModalOn({ todo, todoList, onCloseClick, id, setTodo }) {
       [name]: value,
     });
   };
+
   const removeTags = (indexToRemove) => {
-    const removetags = tags.filter((el) => tags[indexToRemove] !== el);
+    const newTag = [...tags];
+    const removetags = newTag.filter((el) => newTag[indexToRemove] !== el);
     setTags(removetags);
   };
 
   const addTags = (e) => {
-    const filter = tags.filter((el) => el === e.target.value);
+    const newTag = [...tags];
+    const filter = newTag.filter((el) => el === e.target.value);
     if (e.target.value !== "" && filter.length === 0) {
-      if (tags.length < 4) {
-        setTags([...tags, e.target.value]);
+      if (newTag.length < 4) {
+        setTags([...newTag, e.target.value]);
       }
     }
     e.target.value = "";
   };
 
+  //
   const checkText = (title) => {
-    // const validation = /^[~!@#$%^&*()_+|<>?:{}]/;
     const validation = /^[ㄱ-ㅎ|가-힣|a-z|A-Z|0-9|\s]+$/;
     return validation.test(title);
   };
 
-  const onChangeInput = () => {
-    const nextTodo = todo.map((item) => ({
-      ...item,
-      title: item.id === id ? newText.title : item.title,
-      text: item.id === id ? newText.text : item.text,
-      tag: item.id === id ? newText.tag : item.id,
-      currentDate: item.id === id ? newText.currentDate : item.currentDate,
-      dueDate: item.id === id ? newText.dueDate : item.dueDate,
-    }));
+  const newHandleChange = () => {
+    const newTodo = [...todo];
+    const result = newTodo.map((item) => {
+      if (item.id === id) {
+        item.id = newText.id;
+        item.title = newText.title;
+        item.text = newText.text;
+        item.tag = tags;
+        item.currentDate = newText.currentDate;
+        item.dueDate = newText.dueDate;
+      }
+      return item;
+    });
 
-    // setTodo(nextTodo);
+    setTodo([...result]);
+    localStorage.setItem("list", JSON.stringify(result));
     onCloseClick();
   };
 
@@ -216,8 +219,12 @@ function ModalOn({ todo, todoList, onCloseClick, id, setTodo }) {
         <ModalContainer>
           <CloseButton onClick={onCloseClick}>닫기</CloseButton>
           <ModalForm>
-            <Title onChange={handleInput} defaultValue={newText.title}></Title>
-            {checkText(newText.title) || !newText.title ? (
+            <Title
+              onChange={handleInput}
+              name="title"
+              defaultValue={title}
+            ></Title>
+            {checkText(title) || !title ? (
               <Warning></Warning>
             ) : (
               <Warning>특수문자는 입력할 수 없습니다.</Warning>
@@ -225,13 +232,21 @@ function ModalOn({ todo, todoList, onCloseClick, id, setTodo }) {
 
             <TextBox>
               <span className="content">상세 내용:</span>
-              <Text onChange={handleInput} defaultValue={newText.text}></Text>
+              <Text
+                onChange={handleInput}
+                name="text"
+                defaultValue={text}
+              ></Text>
             </TextBox>
             <Date>
               <span type="date" className="duedate">
                 마감일:
               </span>
-              <DueDate type="date" defaultValue={newText.currentDate}></DueDate>
+              <DueDate
+                type="date"
+                name="dueDate"
+                defaultValue={dueDate}
+              ></DueDate>
             </Date>
             <span className="add-tag">태그 입력:</span>
             <TagBox>
@@ -248,16 +263,15 @@ function ModalOn({ todo, todoList, onCloseClick, id, setTodo }) {
               ))}
               <Tag
                 placeholder="태그를 작성해보세요."
-                onChange={handleInput}
                 onKeyUp={(e) => (e.key === "Enter" ? addTags(e) : null)}
                 name="tag"
-                value={newText.tag}
+                onChange={handleInput}
               ></Tag>
             </TagBox>
             <AddDate></AddDate>
             <EditDate></EditDate>
           </ModalForm>
-          <Check onClick={onChangeInput}> 수정 </Check>
+          <Check onClick={newHandleChange}> 수정 </Check>
         </ModalContainer>
       </ModalBackground>
     </>

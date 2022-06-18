@@ -220,9 +220,9 @@ function ModalContents({ closeHandler, addTodo, todo, setIsOpen }) {
     }
   };
 
-  todo.map((item) => {
-    localStorage.setItem(`${item.id}`, JSON.stringify(item));
-  });
+  // todo.map((item) => {
+  //   localStorage.setItem(`${item.id}`, JSON.stringify(item));
+  // });
 
   const onCloseModal = () => {
     window.confirm("입력 중 창을 닫으면 내용이 사라집니다.");
@@ -261,7 +261,6 @@ function ModalContents({ closeHandler, addTodo, todo, setIsOpen }) {
               <DueDate
                 id="offerdate"
                 type="date"
-                // defaultValue={nowTime}
                 name="dueDate"
                 onChange={handleInput}
               ></DueDate>
